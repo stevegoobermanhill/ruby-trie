@@ -1,4 +1,4 @@
-# ruby-trie
+# ruby_trie
 # a pure Ruby trie implementation
 # because fast-trie is broken and segfaults
 
@@ -47,6 +47,8 @@ module RubyTrie
       # adds adds a node at a particular point
       # if the node already exists, then it will
       # overwrite the value
+      # :call-seq:
+      # add_node(string, value) -> TrieContent
       def add_node(string, value)
          current_node = self.root
          current_string = ''
@@ -66,6 +68,9 @@ module RubyTrie
       end
       
       # return the TreeNode corresponding to a given string
+      # :call-seq:
+      # get_node(string) -> TrieNode
+
       def get_node(string)
          current_node = self.root
          current_string = ''
@@ -82,6 +87,8 @@ module RubyTrie
       
       # gets the value at a node
       # returns nil if the node does not exist
+      # :call-seq:
+      # get_node_value(string) -> Object
       def get_node_value(string)
          node = get_node(string)
          node&.content&.value
@@ -104,18 +111,25 @@ module RubyTrie
       # add a string with optional value to the Trie
       # Note - will overwrite the value if the node
       # already exists
+      # :call-seq:
+      # add(string, value) -> TrieContent
+
       def add(string, value=true)
          @root.add_node(string, value)
       end
       
       # get the value at a node
       # returns nil if the node does not exist
+      # :call-seq:
+      # get(string) -> Object
       def get(string)
          @root.get_node_value(string)
       end
       
       # get all the children of a given prefix
       # including the prefix, if it exists itself
+      # :call-seq:
+      # children(string) -> Array
       def children(string)
          parent = @root.get_node(string)
          return nil unless parent
@@ -129,6 +143,8 @@ module RubyTrie
       # get all the children of a given prefix
       # with thier values (as a [key,value] pair)
       # including the prefix, if it exists itself
+      # :call-seq:
+      # children_with_values(string) -> Array
       def children_with_values(string)
          parent = @root.get_node(string)
          return nil unless parent
@@ -141,6 +157,8 @@ module RubyTrie
       
       # get the content of all children of a given prefix
       # including the prefix, if it exists itself
+      # :call-seq:
+      # children_content(string) -> Array
       def children_content(string)
          parent = @root.get_node(string)
          return nil unless parent

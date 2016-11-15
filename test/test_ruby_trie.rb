@@ -4,7 +4,7 @@
 # licenced uner the MIT licence
 
 require 'minitest/autorun'
-require 'ruby-trie'
+require 'ruby_trie'
 include RubyTrie
 
 class TrieTest < MiniTest::Test
