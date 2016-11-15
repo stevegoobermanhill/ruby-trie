@@ -1,17 +1,24 @@
-# rtrie
+# ruby-trie
 # a pure Ruby trie implementation
 # because fast-trie is broken and segfaults
 
 # Stephen Gooberman-Hill@amey.co.uk
-# Nov 2016
+# (c) Amey Nov 2016
+# licenced uner the MIT licence
+
 
 gem 'tree'
 require 'tree'
 
+# RubyTrie is a pure Ruby implentation of a Trie based on the 
+# Tree module
 module RubyTrie
    # the content of a TrieNode
    class TrieContent
+      # symbol at the node, and the entire string to this node are held
       attr_reader :symbol, :string
+      
+      # value can be overwritten
       attr_accessor :value
       
       # Initialize with the full string (not just the symbol)
@@ -23,10 +30,15 @@ module RubyTrie
          @symbol = str[-1]
          @value = value
       end
+      
+      # turn the content into a [symbol, string, value] array
+      def to_a
+         [@symbol, @string, @value]
+      end
    end
 
    # A TrieNode is a node in the Trie
-   # derives from the Tree class
+   # derives from the TreeNode class
    # You should only need this class if you use Tree methods
    # to walk the tree and such-like
    class TrieNode < Tree::TreeNode
@@ -53,8 +65,7 @@ module RubyTrie
          current_node.content = TrieContent.new(string, value)   
       end
       
-      # gets the value at a node
-      # returns nil if the node does not exist
+      # return the TreeNode corresponding to a given string
       def get_node(string)
          current_node = self.root
          current_string = ''
@@ -66,7 +77,14 @@ module RubyTrie
             break unless current_node
          end
          
-         current_node&.content&.value
+         current_node
+      end
+      
+      # gets the value at a node
+      # returns nil if the node does not exist
+      def get_node_value(string)
+         node = get_node(string)
+         node&.content&.value
       end
    end
 
@@ -76,7 +94,6 @@ module RubyTrie
    # TrieNode
    class Trie
       #The Trie just holds the root node
-   
       attr_reader :root
       
       # create an empty Trie
@@ -84,18 +101,58 @@ module RubyTrie
          @root = TrieNode.new('')
       end
       
-      # add a string with optional value to teh Trie
+      # add a string with optional value to the Trie
       # Note - will overwrite the value if the node
       # already exists
-      def add(string, value=nil)
+      def add(string, value=true)
          @root.add_node(string, value)
       end
       
       # get the value at a node
-      #returns nil if the node does not exist
+      # returns nil if the node does not exist
       def get(string)
-         @root.get_node(string)
+         @root.get_node_value(string)
       end
+      
+      # get all the children of a given prefix
+      # including the prefix, if it exists itself
+      def children(string)
+         parent = @root.get_node(string)
+         return nil unless parent
+         
+         parent.inject([]) do |a,n| 
+            a << n.content.string if n.content
+            a
+         end
+      end
+      
+      # get all the children of a given prefix
+      # with thier values (as a [key,value] pair)
+      # including the prefix, if it exists itself
+      def children_with_values(string)
+         parent = @root.get_node(string)
+         return nil unless parent
+         
+         parent.inject([]) do |a,n| 
+            a << [n.content.string, n.content.value] if n.content
+            a
+         end
+      end
+      
+      # get the content of all children of a given prefix
+      # including the prefix, if it exists itself
+      def children_content(string)
+         parent = @root.get_node(string)
+         return nil unless parent
+         
+         parent.inject([]) do |a,n| 
+            a << n.content.to_a if n.content
+            a
+         end
+      end
+
+
+         
    end
 end     
 
